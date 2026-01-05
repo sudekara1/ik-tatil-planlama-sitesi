@@ -69,7 +69,7 @@ butonlar ve form bileşenleri aktif olarak kullanılmıştır.
 
 ## 🌐 Canlı Demo
 
-https://sudekara1.github.io/ik-tatil-planlama-sitesi/
+(https://sudekara1.github.io/ik-tatil-planlama-sitesi/)
 
 
 ---
