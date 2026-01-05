@@ -71,18 +71,6 @@ butonlar ve form bileşenleri aktif olarak kullanılmıştır.
 
 https://sudekara1.github.io/ik-tatil-planlama-sitesi/
 
----
-
-## 🎥 Demo Video
-
-https://youtube.com/VIDEO_LINKIN
-
-Video içeriğinde:
-- Ana sayfada API verilerinin yüklenmesi
-- Arama / filtreleme işlemleri
-- Detay sayfasına geçiş
-- Offline senaryo
-- Uygulamanın install edilebilirliği gösterilmiştir.
 
 ---
 
