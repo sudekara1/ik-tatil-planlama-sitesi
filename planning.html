@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İzin Planlama | İK Planlama</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">İK PLANLAMA</a>
+      <nav class="menu">
+        <a href="index.html">Anasayfa</a>
+        <a href="products.html">Resmi Tatiller</a>
+        <a href="planning.html" class="active">Planlama</a>
+        <a href="about.html">Hakkımızda</a>
+         <a href="faq.html">SSS</a>
+        <a href="contact.html">İletişim</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div style="margin-bottom: 20px;">
+      <button class="apple-btn" onclick="history.back()">← Geri Dön</button>
+    </div>
+
+    <h1 style="margin-bottom: 10px;">İzin Planlama Paneli</h1>
+    <p style="color: #86868b; margin-bottom: 30px;">İzin tarihlerinizi seçin ve yıllık planınızı oluşturun.</p>
+
+    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+      
+      <div class="card-apple" style="flex: 1; min-width: 300px; height: fit-content;">
+        <h3 style="color: var(--accent); margin-bottom: 20px;">Yeni İzin Ekle</h3>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="display:block; margin-bottom:5px; font-size: 14px; color: #86868b;">İzin Başlangıcı</label>
+          <input type="date" id="startDate" class="search-input" style="margin:0; width:100%;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label style="display:block; margin-bottom:5px; font-size: 14px; color: #86868b;">İzin Bitişi</label>
+          <input type="date" id="endDate" class="search-input" style="margin:0; width:100%;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display:block; margin-bottom:5px; font-size: 14px; color: #86868b;">İzin Türü</label>
+          <select id="leaveType" class="search-input" style="margin:0; width:100%; background-color: #1d1d1f; cursor: pointer;">
+            <option value="Yıllık İzin">Yıllık İzin</option>
+            <option value="Mazeret İzni">Mazeret İzni</option>
+            <option value="Hastalık İzni">Hastalık İzni</option>
+          </select>
+        </div>
+
+        <button type="button" onclick="addPlan()" class="apple-btn" style="width: 100%; background: var(--accent); color: #000; font-weight: 700;">Plana Ekle</button>
+      </div>
+
+      <div class="card-apple" style="flex: 2; min-width: 320px;">
+        <h3 style="margin-bottom: 20px;">Planlanan İzinlerim</h3>
+        <div id="planList">
+          </div>
+      </div>
+
+    </div>
+  </main>
+
+   <footer class="footer">
+    <p>&copy; 2026 İK Planlama Sistemi. Tüm hakları saklıdır.</p>
+  </footer>
+
+  <script>
+    // Sayfa açıldığında kayıtlı izinleri yükle
+    document.addEventListener('DOMContentLoaded', loadPlans);
+
+    function addPlan() {
+      const start = document.getElementById('startDate').value;
+      const end = document.getElementById('endDate').value;
+      const type = document.getElementById('leaveType').value;
+
+      if (!start || !end) {
+        alert("Lütfen tarih seçiniz!");
+        return;
+      }
+
+      const d1 = new Date(start);
+      const d2 = new Date(end);
+      const diff = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+
+      if (diff <= 0) {
+        alert("Bitiş tarihi başlangıçtan önce olamaz!");
+        return;
+      }
+
+      const newPlan = {
+        id: Date.now(),
+        start,
+        end,
+        type,
+        days: diff
+      };
+
+      savePlan(newPlan);
+      renderPlans();
+      
+      // Formu temizle
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value = '';
+    }
+
+    function savePlan(plan) {
+      let plans = JSON.parse(localStorage.getItem('myLeavePlans')) || [];
+      plans.push(plan);
+      localStorage.setItem('myLeavePlans', JSON.stringify(plans));
+    }
+
+    function deletePlan(id) {
+      let plans = JSON.parse(localStorage.getItem('myLeavePlans')) || [];
+      plans = plans.filter(p => p.id !== id);
+      localStorage.setItem('myLeavePlans', JSON.stringify(plans));
+      renderPlans();
+    }
+
+    function loadPlans() {
+      renderPlans();
+    }
+
+    function renderPlans() {
+      const planList = document.getElementById('planList');
+      const plans = JSON.parse(localStorage.getItem('myLeavePlans')) || [];
+
+      if (plans.length === 0) {
+        planList.innerHTML = '<p style="color: #86868b; text-align: center; padding: 20px;">Henüz bir plan eklenmedi.</p>';
+        return;
+      }
+
+      planList.innerHTML = plans.map(plan => `
+        <div class="card-apple" style="background: rgba(255,255,255,0.05); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333;">
+          <div>
+            <strong style="color: var(--accent); font-size: 16px;">${plan.type}</strong> <br>
+            <span style="font-size: 13px; color: #86868b;">${plan.start} / ${plan.end}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="font-size: 18px; font-weight: 700; color: #fff;">${plan.days} Gün</span>
+            <button onclick="deletePlan(${plan.id})" style="background: none; border: none; color: #ff453a; cursor: pointer; font-size: 18px;" title="Sil">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
